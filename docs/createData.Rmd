@@ -1,0 +1,49 @@
+---
+title: "Create Data - CSB"
+author: "Christopher Prener, Ph.D."
+date: '(`r format(Sys.time(), "%B %d, %Y")`)'
+output: 
+  github_document: default
+  html_notebook: default 
+---
+
+## Introduction
+This notebook creates the Citizens' Service Bureau Data for the Spring 2019 final projects.
+
+## Dependencies
+This notebook requires:
+
+```{r load-packages}
+# tidystl packages
+library(stlcsb)
+
+# tidyverse packages
+library(dplyr)
+library(readr)
+
+# other packages
+library(here)
+```
+
+## Download Data
+This notebook requires data that can be automatically downloaded from the City of St. Louis via the `stlcsb` package's `csb_get_data()` function:
+
+```{r download-data}
+csb <- csb_get_data(years = 2013:2018)
+```
+
+## Subset
+There are some variables that we'll get rid of before exporting the data, and we'll get rid of cancelled calls as well:
+
+```{r subset-cols}
+csb %>%
+  csb_canceled(var = datecancelled) %>%
+  select(-probaddtype, -callertype, -neighborhood, -ward, -submitto, -dateinvtdone, -prjcompletedate) -> csb
+```
+
+## Write Data
+Finally, we'll write the data to `.csv`:
+
+```{r write-data}
+write_csv(csb, here("data", "csb.csv"))
+```
